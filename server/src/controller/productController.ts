@@ -117,3 +117,23 @@ export const updateProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const publishProduct = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.isPublished = !product.isPublished;
+    await product.save();
+
+    res.status(200).json({
+      message: product.isPublished
+        ? "Product published"
+        : "Product unpublished",
+      product,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
