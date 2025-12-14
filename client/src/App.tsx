@@ -1,0 +1,38 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import HomePage from "./pages/HomePage";
+import ProductsPage from "./pages/ProductsPage";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
+import Otp from "./pages/Otp";
+
+const MainLayout = () => {
+  return (
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 min-h-screen">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
+        </Routes>
+      </div>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Auth pages (NO sidebar) */}
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/otp" element={<Otp />} />
+        {/* App pages (WITH sidebar) */}
+        <Route path="/*" element={<MainLayout />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
