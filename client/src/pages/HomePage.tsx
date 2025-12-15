@@ -43,7 +43,7 @@ export default function HomePage() {
           return;
         }
 
-        const res = await fetch("http://localhost:3000/product", {
+        const res = await fetch(" https://productr-0woy.onrender.com/product", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

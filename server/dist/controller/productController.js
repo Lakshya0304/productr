@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProduct = exports.deleteProduct = exports.getMyProducts = exports.createProduct = exports.upload = void 0;
+exports.publishProduct = exports.updateProduct = exports.deleteProduct = exports.getMyProducts = exports.createProduct = exports.upload = void 0;
 const productModal_1 = require("../modals/productModal");
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
@@ -103,3 +103,23 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.updateProduct = updateProduct;
+const publishProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const product = yield productModal_1.Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        product.isPublished = !product.isPublished;
+        yield product.save();
+        res.status(200).json({
+            message: product.isPublished
+                ? "Product published"
+                : "Product unpublished",
+            product,
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.publishProduct = publishProduct;

@@ -85,13 +85,16 @@ export default function AddProductModal() {
         formData.append("image", data.image);
       }
       console.log("Form Data:", formData);
-      const res = await fetch("http://localhost:3000/product/create-product", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const res = await fetch(
+        "https://productr-0woy.onrender.com/product/create-product",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
       console.log("Response:", res);
       const result = await res.json();
 

@@ -29,7 +29,7 @@ export default function ProductsPage() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const res = await fetch("http://localhost:3000/product", {
+        const res = await fetch(" https://productr-0woy.onrender.com/product", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -57,10 +57,13 @@ export default function ProductsPage() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch(`http://localhost:3000/product/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `https://productr-0woy.onrender.com/product/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to delete product");
 
@@ -73,14 +76,34 @@ export default function ProductsPage() {
   };
 
 
+  const handlePublishToggle = async (id: string) => {
+    try {
+      const res = await fetch(
+        `https://productr-0woy.onrender.com/product/${id}/publish`,
+        {
+          method: "PATCH",
+        }
+      );
+
+      const data = await res.json();
+      setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
+    } catch (error) {
+      console.error("Publish toggle failed", error);
+    }
+  };
+
+
+
+
   return (
     <div className="flex flex-col w-full h-full bg-[#F5F7FA]">
       <Navbar />
 
-      {products.length > 0 ?
-      <div className="flex justify-end px-10 mt-6">
-        <AddProductModal />
-      </div>: null}
+      {products.length > 0 ? (
+        <div className="flex justify-end px-10 mt-6">
+          <AddProductModal />
+        </div>
+      ) : null}
 
       {loading ? (
         <div className="mt-10 w-full min-h-[80vh] flex items-center justify-center">
@@ -92,6 +115,7 @@ export default function ProductsPage() {
             <ProductCard
               key={product._id}
               product={product}
+              onPublish={handlePublishToggle}
               onDelete={handleDelete}
             />
           ))}

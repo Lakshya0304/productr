@@ -13,7 +13,7 @@ export interface Product {
   brand: string;
   exchange: "yes" | "no";
   image?: string;
-  published?: boolean;
+  published: boolean;
 }
 
 interface ProductCardProps {
@@ -30,7 +30,7 @@ export default function ProductCard({
   onDelete,
 }: ProductCardProps) {
   const images = product.image
-
+    
   return (
     <Card className="w-[360px] rounded-3xl m-2 p-4 shadow-sm border">
       <CardContent className="p-0 flex flex-col items-center">
@@ -68,15 +68,17 @@ export default function ProductCard({
 
         {/* Actions */}
         <div className="w-full flex justify-between items-center mt-6">
-          {!product.published && (
-            <Button
-              className="w-[140px] h-[45px] text-white text-[15px] rounded-xl bg-[linear-gradient(180deg,#000FB4_13.75%,#4050FF_135%)]"
-              onClick={() => onPublish?.(product._id)}
-            >
-              Publish
-            </Button>
-          )}
-
+          <Button
+            className={`w-[140px] h-[45px] text-white text-[15px] rounded-xl ${
+              product.published
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-[linear-gradient(180deg,#000FB4_13.75%,#4050FF_135%)]"
+            }`}
+            onClick={() => onPublish?.(product._id)}
+          >
+            {product.published ? "Unpublish" : "Publish"}
+          </Button>
+          
           <Button
             variant="outline"
             className="w-[110px] h-[45px] rounded-xl border"

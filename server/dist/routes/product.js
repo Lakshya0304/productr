@@ -8,7 +8,7 @@ const middleware_1 = require("../middleware");
 const productController_1 = require("../controller/productController");
 const product = express_1.default.Router();
 product.post("/create-product", middleware_1.protect, productController_1.upload.single("image"), productController_1.createProduct);
-// product.post("/create-product", protect,upload.single('image') , createProduct);
 product.get("/", middleware_1.protect, productController_1.getMyProducts);
 product.delete("/:id", middleware_1.protect, productController_1.deleteProduct);
+product.put("/:id/publish", productController_1.publishProduct);
 exports.default = product;

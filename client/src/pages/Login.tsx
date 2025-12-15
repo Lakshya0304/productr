@@ -25,17 +25,20 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          identifier.includes("@")
-            ? { email: identifier }
-            : { phoneNumber: identifier }
-        ),
-      });
+      const res = await fetch(
+        " https://productr-0woy.onrender.com/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(
+            identifier.includes("@")
+              ? { email: identifier }
+              : { phoneNumber: identifier }
+          ),
+        }
+      );
 
       const data = await res.json();
 

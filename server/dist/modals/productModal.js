@@ -48,5 +48,9 @@ const productSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    isPublished: {
+        type: Boolean,
+        default: false,
+    },
 });
 exports.Product = mongoose_1.default.model("Product", productSchema);

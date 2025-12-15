@@ -47,17 +47,20 @@ const Otp = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/auth/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          identifier.includes("@")
-            ? { email: identifier, otp: otpValue }
-            : { phoneNumber: identifier, otp: otpValue }
-        ),
-      });
+      const res = await fetch(
+        " https://productr-0woy.onrender.com/auth/verify-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(
+            identifier.includes("@")
+              ? { email: identifier, otp: otpValue }
+              : { phoneNumber: identifier, otp: otpValue }
+          ),
+        }
+      );
 
       const data = await res.json();
 
@@ -67,10 +70,8 @@ const Otp = () => {
         return;
       }
 
-      // ✅ Save JWT
       localStorage.setItem("token", data.token);
 
-      // ✅ Redirect to home
       navigate("/");
     } catch (error) {
       console.error(error);
