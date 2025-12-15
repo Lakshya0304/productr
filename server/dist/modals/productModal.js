@@ -46,7 +46,8 @@ const productSchema = new mongoose_1.default.Schema({
     },
     image: {
         type: String,
-        required: true,
+        required: false,
+        default: "",
     },
     isPublished: {
         type: Boolean,

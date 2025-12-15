@@ -7,11 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import pic1 from "@/assets/pic1.svg";
+import { BACKEND_URL } from "@/config";
 
 const Otp = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const identifier = location.state?.identifier;
 
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
@@ -29,7 +29,6 @@ const Otp = () => {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // auto focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
@@ -48,7 +47,7 @@ const Otp = () => {
 
     try {
       const res = await fetch(
-        " https://productr-0woy.onrender.com/auth/verify-otp",
+        `${BACKEND_URL}/auth/verify-otp`,
         {
           method: "POST",
           headers: {

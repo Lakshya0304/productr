@@ -14,6 +14,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 (0, db_1.default)();
 app.use("/auth", auth_1.default);
 app.use("/product", middleware_1.protect, product_1.default);

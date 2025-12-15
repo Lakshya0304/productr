@@ -23,6 +23,8 @@ import FileUploader from "./Fileuploader";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BACKEND_URL } from "@/config";
+import { useEffect, useState } from "react";
 
 
 const formSchema = z.object({
@@ -33,7 +35,7 @@ const formSchema = z.object({
   price: z.string().min(1, "Enter selling price"),
   brand: z.string().min(1, "Brand name required"),
   exchange: z.string().min(1, "Select yes or no"),
-  image: z.instanceof(File).nullable(),
+  image: z.instanceof(File).optional().nullable(),
 });
 type FormValues = {
   name: string;
@@ -43,24 +45,68 @@ type FormValues = {
   price: string;
   brand: string;
   exchange: string;
-  image: File | null;
+  image?: File | null;
 };
 
-export default function AddProductModal() {
+interface AddProductModalProps {
+  productId?: string | null;
+  product?: {
+    name: string;
+    type: string;
+    stock: number;
+    mrp: number;
+    price: number;
+    brand: string;
+    exchange: string;
+  } | null;
+  onClose?: () => void;
+  onSuccess?: () => void;
+  isOpen?: boolean;
+}
+
+export default function AddProductModal({ 
+  productId = null, 
+  product = null,
+  onClose,
+  onSuccess,
+  isOpen = false
+}: AddProductModalProps) {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(isOpen);
+  const isEditMode = !!productId;
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      type: "",
-      stock: "",
-      mrp: "",
-      price: "",
-      brand: "",
-      exchange: "",
+      name: product?.name || "",
+      type: product?.type || "",
+      stock: product?.stock?.toString() || "",
+      mrp: product?.mrp?.toString() || "",
+      price: product?.price?.toString() || "",
+      brand: product?.brand || "",
+      exchange: product?.exchange || "",
       image: null,
     },
   });
+
+  useEffect(() => {
+    if (product) {
+      form.reset({
+        name: product.name,
+        type: product.type,
+        stock: product.stock.toString(),
+        mrp: product.mrp.toString(),
+        price: product.price.toString(),
+        brand: product.brand,
+        exchange: product.exchange,
+        image: null,
+      });
+    }
+  }, [product, form]);
 
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
@@ -68,7 +114,7 @@ export default function AddProductModal() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        toast.error("You must be logged in to add a product");
+        toast.error("You must be logged in");
         return;
       }
 
@@ -84,45 +130,57 @@ export default function AddProductModal() {
       if (data.image) {
         formData.append("image", data.image);
       }
-      console.log("Form Data:", formData);
-      const res = await fetch(
-        "https://productr-0woy.onrender.com/product/create-product",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-      console.log("Response:", res);
-      const result = await res.json();
+
+      const method = isEditMode ? "PUT" : "POST";
+      const endpoint = isEditMode 
+        ? `${BACKEND_URL}/product/${productId}/edit` 
+        : `${BACKEND_URL}/product/create-product`;
+
+      const res = await fetch(endpoint, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
       if (!res.ok) {
-        toast.error(result.message || "Failed to create product");
-        return;
+        const error = await res.text();
+        throw new Error(error || "Request failed");
       }
 
-      toast.success("Product created successfully!");
-      navigate("/"); 
+      const result = await res.json();
+      console.log("Response:", result);
+
+      toast.success(isEditMode ? "Product updated successfully!" : "Product created successfully!");
+      form.reset();
+      setOpen(false);
+      
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate("/products");
+      }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error(isEditMode ? "Failed to update product" : "Failed to create product");
     }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="w-[315px] h-[40px] rounded-lg bg-[linear-gradient(180deg,#000FB4_13.75%,#4050FF_135%)]">
-          Add your Products
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      {!isEditMode && (
+        <DialogTrigger asChild>
+          <Button className="w-[315px] h-[40px] rounded-lg bg-[linear-gradient(180deg,#000FB4_13.75%,#4050FF_135%)]">
+            Add your Products
+          </Button>
+        </DialogTrigger>
+      )}
 
       <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[480px] max-h-[95vh] overflow-y-auto p-8 bg-white rounded-xl shadow-2xl border border-gray-200">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            Add Product
+            {isEditMode ? "Edit Product" : "Add Product"}
           </DialogTitle>
         </DialogHeader>
 
@@ -228,7 +286,7 @@ export default function AddProductModal() {
 
           <div className="flex justify-end mt-3">
             <Button type="submit" className="bg-blue-600 w-24">
-              Create
+              {isEditMode ? "Update" : "Create"}
             </Button>
           </div>
         </form>

@@ -10,5 +10,6 @@ const product = express_1.default.Router();
 product.post("/create-product", middleware_1.protect, productController_1.upload.single("image"), productController_1.createProduct);
 product.get("/", middleware_1.protect, productController_1.getMyProducts);
 product.delete("/:id", middleware_1.protect, productController_1.deleteProduct);
-product.put("/:id/publish", productController_1.publishProduct);
+product.patch("/:id/publish", productController_1.publishProduct);
+product.put("/:id/edit", middleware_1.protect, productController_1.upload.single("image"), productController_1.updateProduct);
 exports.default = product;

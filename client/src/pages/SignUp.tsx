@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import pic1 from "@/assets/pic1.svg";
+import { BACKEND_URL } from "@/config";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ const SignUp = () => {
 
     try {
       const res = await fetch(
-        "https://productr-0woy.onrender.com/auth/signup",
+        `${BACKEND_URL}/auth/signup`,
         {
           method: "POST",
           headers: {

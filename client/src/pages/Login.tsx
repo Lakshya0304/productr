@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import pic1 from "@/assets/pic1.svg";
+import { BACKEND_URL } from "@/config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const Login = () => {
 
     try {
       const res = await fetch(
-        " https://productr-0woy.onrender.com/auth/login",
+        `${BACKEND_URL}/auth/login`,
         {
           method: "POST",
           headers: {

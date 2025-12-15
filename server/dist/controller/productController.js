@@ -34,7 +34,7 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         console.log("req.body:", req.body);
         console.log("Inside createProduct");
         const { name, type, stock, mrp, price, brand, exchange } = req.body;
-        const image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.filename;
+        const image = ((_a = req.file) === null || _a === void 0 ? void 0 : _a.filename) || "";
         const product = yield productModal_1.Product.create({
             userId: req.user.id,
             name,
@@ -89,16 +89,51 @@ const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteProduct = deleteProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     try {
         const { id } = req.params;
-        const updateData = req.body;
-        const product = yield productModal_1.Product.findOneAndUpdate({ _id: id, userId: req.user.id }, { $set: updateData }, { new: true });
+        console.log("Full req.body:", JSON.stringify(req.body));
+        console.log("req.file:", req.file);
+        // Create update object from req.body
+        const updateObj = {};
+        // Copy all fields from req.body
+        if (req.body.name)
+            updateObj.name = req.body.name;
+        if (req.body.type)
+            updateObj.type = req.body.type;
+        if (req.body.stock !== undefined && req.body.stock !== null && req.body.stock !== '') {
+            updateObj.stock = parseInt(req.body.stock);
+        }
+        if (req.body.mrp !== undefined && req.body.mrp !== null && req.body.mrp !== '') {
+            updateObj.mrp = parseFloat(req.body.mrp);
+        }
+        if (req.body.price !== undefined && req.body.price !== null && req.body.price !== '') {
+            updateObj.price = parseFloat(req.body.price);
+        }
+        if (req.body.brand)
+            updateObj.brand = req.body.brand;
+        if (req.body.exchange)
+            updateObj.exchange = req.body.exchange;
+        // Handle file upload
+        if ((_b = req.file) === null || _b === void 0 ? void 0 : _b.filename) {
+            updateObj.image = req.file.filename;
+        }
+        console.log("Final update object:", updateObj);
+        if (Object.keys(updateObj).length === 0) {
+            return res.status(400).json({ message: "No valid fields to update" });
+        }
+        const product = yield productModal_1.Product.findByIdAndUpdate(id, updateObj, { new: true });
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
+        }
+        // Verify user owns the product
+        if (product.userId.toString() !== req.user.id) {
+            return res.status(403).json({ message: "Unauthorized" });
         }
         res.json({ message: "Product updated successfully", product });
     }
     catch (error) {
+        console.error("Update error:", error);
         res.status(500).json({ message: error.message });
     }
 });
