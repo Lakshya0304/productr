@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import pic1 from "@/assets/pic1.svg";
 import { BACKEND_URL } from "@/config";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +16,7 @@ const SignUp = () => {
     phoneNumber: "",
     password: "",
   });
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -58,6 +59,7 @@ const SignUp = () => {
         phoneNumber: "",
         password: "",
       });
+      navigate("/");
     } catch (err: any) {
       setError(err.message);
     } finally {
