@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.publishProduct = exports.updateProduct = exports.deleteProduct = exports.getMyProducts = exports.createProduct = exports.upload = void 0;
+exports.getPublishedProducts = exports.publishProduct = exports.updateProduct = exports.deleteProduct = exports.getAllProducts = exports.createProduct = exports.upload = void 0;
 const productModal_1 = require("../modals/productModal");
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
@@ -57,7 +57,7 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.createProduct = createProduct;
-const getMyProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const products = yield productModal_1.Product.find({
             userId: req.user.id,
@@ -71,7 +71,7 @@ const getMyProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json({ message: error.message });
     }
 });
-exports.getMyProducts = getMyProducts;
+exports.getAllProducts = getAllProducts;
 const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const product = yield productModal_1.Product.findOneAndDelete({
@@ -89,51 +89,34 @@ const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteProduct = deleteProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
     try {
         const { id } = req.params;
-        console.log("Full req.body:", JSON.stringify(req.body));
-        console.log("req.file:", req.file);
-        // Create update object from req.body
-        const updateObj = {};
-        // Copy all fields from req.body
-        if (req.body.name)
-            updateObj.name = req.body.name;
-        if (req.body.type)
-            updateObj.type = req.body.type;
-        if (req.body.stock !== undefined && req.body.stock !== null && req.body.stock !== '') {
-            updateObj.stock = parseInt(req.body.stock);
+        const { name, type, stock, mrp, price, brand, exchange } = req.body;
+        const updateData = {};
+        if (name)
+            updateData.name = name;
+        if (type)
+            updateData.type = type;
+        if (stock)
+            updateData.stock = parseInt(stock);
+        if (mrp)
+            updateData.mrp = parseFloat(mrp);
+        if (price)
+            updateData.price = parseFloat(price);
+        if (brand)
+            updateData.brand = brand;
+        if (exchange)
+            updateData.exchange = exchange;
+        if (req.file) {
+            updateData.image = req.file.filename;
         }
-        if (req.body.mrp !== undefined && req.body.mrp !== null && req.body.mrp !== '') {
-            updateObj.mrp = parseFloat(req.body.mrp);
-        }
-        if (req.body.price !== undefined && req.body.price !== null && req.body.price !== '') {
-            updateObj.price = parseFloat(req.body.price);
-        }
-        if (req.body.brand)
-            updateObj.brand = req.body.brand;
-        if (req.body.exchange)
-            updateObj.exchange = req.body.exchange;
-        // Handle file upload
-        if ((_b = req.file) === null || _b === void 0 ? void 0 : _b.filename) {
-            updateObj.image = req.file.filename;
-        }
-        console.log("Final update object:", updateObj);
-        if (Object.keys(updateObj).length === 0) {
-            return res.status(400).json({ message: "No valid fields to update" });
-        }
-        const product = yield productModal_1.Product.findByIdAndUpdate(id, updateObj, { new: true });
+        const product = yield productModal_1.Product.findOneAndUpdate({ _id: id, userId: req.user.id }, { $set: updateData }, { new: true });
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
-        }
-        // Verify user owns the product
-        if (product.userId.toString() !== req.user.id) {
-            return res.status(403).json({ message: "Unauthorized" });
         }
         res.json({ message: "Product updated successfully", product });
     }
     catch (error) {
-        console.error("Update error:", error);
         res.status(500).json({ message: error.message });
     }
 });
@@ -158,3 +141,16 @@ const publishProduct = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.publishProduct = publishProduct;
+const getPublishedProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const products = yield productModal_1.Product.find({
+            userId: req.user.id,
+            isPublished: true
+        });
+        res.json({ products });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.getPublishedProducts = getPublishedProducts;

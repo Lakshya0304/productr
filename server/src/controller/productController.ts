@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Product } from "../modals/productModal";
 import multer from "multer";
 import path from "path";
+import id from "zod/v4/locales/id.js";
 
 declare global {
   namespace Express {
@@ -126,16 +127,22 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const publishProduct = async (req: Request, res: Response) => {
   try {
+    console.log("Toggling publish for product ID:", req.params.id);
     const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    product.isPublished = !product.isPublished;
-    await product.save();
+    // if (!product) {
+    //   return res.status(404).json({ message: "Product not found" });
+    // }
+    // product.isPublished = !product.isPublished;
+    // await product.save();
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { isPublished: !product?.isPublished },
+      { new: true } // return updated document
+    );
+    await updatedProduct?.save();
 
     res.status(200).json({
-      message: product.isPublished
+      message: product?.isPublished
         ? "Product published"
         : "Product unpublished",
       product,

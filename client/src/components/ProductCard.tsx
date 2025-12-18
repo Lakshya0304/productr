@@ -27,11 +27,24 @@ export default function ProductCard({
 
   const image =product.images?.[0] || "loading...";
 
+
+  
   const handlePublish = async () => {
     if (!onPublish) return;
     try {
+        // await fetch(`${BACKEND_URL}/product/${product._id}/publish`, {
+        //   method: "PUT",
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+        //   },
+        // });
       setPublishing(true);
       await onPublish(product._id);
+        setToastMessage(
+          `Product is now ${product.isPublished ? "unpublished" : "published"}`
+        );
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
     } finally {
       setPublishing(false);
     }
@@ -91,9 +104,9 @@ export default function ProductCard({
                 disabled={publishing}
                 onClick={handlePublish}
                 className={`w-[140px] h-[45px] rounded-xl text-white transition-colors
-                ${product.published? "bg-green-600": "bg-blue-600"}`}
+                ${product.isPublished? "bg-green-600": "bg-blue-600"}`}
             >
-                {product.published ? "Unpublish" : "Publish"}
+                {product.isPublished ? "Unpublish" : "Publish"}
             </Button>
 
           <Button

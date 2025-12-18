@@ -4,20 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BACKEND_URL } from "@/config";
+import type { Product } from "@/types/product";
 import { useEffect, useState } from "react";
 
-interface Product {
-  _id: string;
-  name: string;
-  type: string;
-  stock: number;
-  mrp: number;
-  price: number;
-  brand: string;
-  exchange: "yes" | "no";
-  images?: string[];
-  published: boolean;
-}
 
 function GridLoader() {
   return (
@@ -58,7 +47,7 @@ export default function HomePage() {
   }, []);
 
   const filteredProducts = products.filter((p) =>
-    tab === "published" ? p.published : !p.published
+    tab === "published" ? p.isPublished : !p.isPublished
   );
 
   return (

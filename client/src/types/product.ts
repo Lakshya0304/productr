@@ -8,5 +8,5 @@ export interface Product {
   brand: string;
   exchange: "yes" | "no";
   images?: string[];
-  published: boolean;
+  isPublished: boolean;
 }

@@ -74,7 +74,7 @@ export const requestOtp = async (
     }
 
     const otp: string = Math.floor(100000 + Math.random() * 900000).toString();
-
+    
     await Otp.create({
       userId: user._id,
       otp,
@@ -83,7 +83,7 @@ export const requestOtp = async (
 
     console.log("OTP:", otp);
 
-    return res.json({ message: "OTP sent successfully" });
+    return res.json({ message: "OTP sent successfully" , otp});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
