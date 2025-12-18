@@ -25,10 +25,14 @@ Assignment
 
 ### Product Routes
 
-| Method | Route               | Description                     |
-|--------|-------------------|---------------------------------|
-| POST   | /product/create-product | Create a new product       |
-| DELETE | /product/:id       | Delete a product by ID          |
+| Method | Route                     | Description                                  |
+|--------|---------------------------|----------------------------------------------|
+| POST   | /product/create-product   | Create a new product                         |
+| GET    | /product/all              | Get all products of logged-in user           |
+| GET    | /product/published        | Get all published products of logged-in user |
+| DELETE | /product/:id              | Delete a product by ID                       |
+| PATCH  | /product/:id/publish      | Publish a product                            |
+| PUT    | /product/:id/edit         | Update a product by ID                       |
 
 ---
 
