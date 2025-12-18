@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Trash2, Check } from "lucide-react";
 import { useState } from "react";
 
 interface Product {
@@ -30,6 +31,10 @@ export default function ProductCard({
   onDelete,
 }: ProductCardProps) {
   const [publishing, setPublishing] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const image =product.images?.[0] || "loading...";
 
@@ -37,9 +42,23 @@ export default function ProductCard({
     if (!onPublish) return;
     try {
       setPublishing(true);
-      await onPublish(product._id); // backend call happens in parent
+      await onPublish(product._id);
     } finally {
       setPublishing(false);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!onDelete) return;
+    try {
+      setIsDeleting(true);
+      await onDelete(product._id);
+      setShowDeleteDialog(false);
+      setToastMessage(`${product.name} was deleted successfully`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -99,12 +118,48 @@ export default function ProductCard({
           <Button
             variant="ghost"
             className="h-[45px] w-[45px] rounded-xl"
-            onClick={() => onDelete?.(product._id)}
+            onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 size={22} />
           </Button>
         </div>
       </CardContent>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-[400px] bg-white">
+          <DialogHeader>
+            <DialogTitle>Delete Product</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete "{product.name}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 pt-4">
+            <Button
+                variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-500 text-black"
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {showToast && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg animate-in fade-in slide-in-from-bottom-4 z-50">
+          <Check size={20} />
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </Card>
   );
 }

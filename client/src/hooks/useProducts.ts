@@ -8,7 +8,7 @@ export function useProducts() {
 
   const fetchProducts = async () => {
     try {
-      const data = await apiFetch("/product");
+      const data = await apiFetch("/product/all");
       setProducts(data.products || []);
     } catch (err) {
       console.error(err);
@@ -24,11 +24,20 @@ export function useProducts() {
 
   const togglePublish = async (id: string) => {
     console.log("Toggling publish for product ID:", id);
-    const data = await apiFetch(`/product/${id}/publish`, {
-      method: "PATCH",
-    });
+    try {
+      const data = await apiFetch(`/product/${id}/publish`, {
+        method: "PATCH",
+      });
 
-    setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)));
+      const updatedProduct = data.product;
+      if (!updatedProduct.published && updatedProduct.isPublished !== undefined) {
+        updatedProduct.published = updatedProduct.isPublished;
+      }
+
+      setProducts((prev) => prev.map((p) => (p._id === id ? updatedProduct : p)));
+    } catch (err) {
+      console.error("Error toggling publish:", err);
+    }
   };
 
   useEffect(() => {

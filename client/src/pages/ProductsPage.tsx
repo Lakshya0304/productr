@@ -37,13 +37,17 @@ export default function ProductsPage() {
     fetchProducts();
   };
 
+  const handleCreateSuccess = () => {
+    fetchProducts();
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F7FA]">
       <Navbar/>
-
+        
       {products.length > 0 && (
         <div className="flex justify-end px-10 mt-6">
-          <AddProductModal />
+          <AddProductModal onSuccess={handleCreateSuccess} />
         </div>
       )}
 
@@ -80,7 +84,7 @@ export default function ProductsPage() {
               <p className="text-gray-500 text-sm">
                 Create products now and connect your store later.
               </p>
-              <AddProductModal />
+              <AddProductModal onSuccess={handleCreateSuccess} />
             </CardContent>
           </Card>
         </div>

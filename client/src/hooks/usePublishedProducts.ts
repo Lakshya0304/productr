@@ -6,10 +6,18 @@ export function usePublishedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAllProducts = async () => {
+  const fetchPublishedAndUnpublished = async () => {
     try {
-      const data = await apiFetch("/product/all");
-      setProducts(data.products || []);
+      setLoading(true);
+      const publishedData = await apiFetch("/product/published");
+      
+      const allData = await apiFetch("/product/all");
+      
+      const unpublishedProducts = allData.products.filter((p: Product) => !p.published);
+      
+      const combinedProducts = [...publishedData.products, ...unpublishedProducts];
+      
+      setProducts(combinedProducts);
     } catch (err) {
       console.error(err);
     } finally {
@@ -22,7 +30,6 @@ export function usePublishedProducts() {
       const data = await apiFetch(`/product/${id}/publish`, {
         method: "PATCH",
       });
-      // Update product in list
       setProducts((prev) => prev.map((p) => (p._id === id ? { ...p, published: data.product.published } : p)));
     } catch (err) {
       console.error(err);
@@ -30,13 +37,13 @@ export function usePublishedProducts() {
   };
 
   useEffect(() => {
-    fetchAllProducts();
+    fetchPublishedAndUnpublished();
   }, []);
 
   return {
     products,
     loading,
-    fetchAllProducts,
+    fetchPublishedAndUnpublished,
     togglePublish,
   };
 }

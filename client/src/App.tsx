@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Otp from "./pages/Otp";
@@ -10,6 +11,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toaster position="bottom-center" reverseOrder={false} />
       <Routes>
         {/* Public Routes */}
         <Route
