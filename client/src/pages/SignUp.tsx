@@ -59,7 +59,9 @@ const SignUp = () => {
         phoneNumber: "",
         password: "",
       });
-      navigate("/");
+      navigate("/otp", {
+        state: { identifier: formData.email },
+      });
     } catch (err: any) {
       setError(err.message);
     } finally {
