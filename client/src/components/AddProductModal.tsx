@@ -67,7 +67,6 @@ interface AddProductModalProps {
 export default function AddProductModal({ 
   productId = null, 
   product = null,
-  onClose,
   onSuccess,
   isOpen = false
 }: AddProductModalProps) {

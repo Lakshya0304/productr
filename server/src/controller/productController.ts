@@ -149,10 +149,8 @@ export const getPublishedProducts = async (req: Request, res: Response) => {
   try {
     const products = await Product.find({
         userId: req.user!.id,
-        isPublished: true
-    });
-    console.log("🚀 ~ getPublishedProducts ~ products:", products)
-    
+        isPublished: true});
+
     res.json({ products });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
