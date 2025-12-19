@@ -49,6 +49,11 @@ const Login = () => {
         return;
       }
 
+      // Log OTP to console for testing
+      if (data.otp) {
+        console.log("🔐 OTP :", data.otp);
+      }
+
       navigate("/otp", {
         state: { identifier },
       });
